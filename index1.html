@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chat UI To-Do App</title>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #f4f6f8;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+    }
+
+    .app {
+        width: 350px;
+        height: 500px;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    .header {
+        background: #4a90e2;
+        color: white;
+        padding: 15px;
+        text-align: center;
+        font-weight: bold;
+    }
+
+    .messages {
+        flex: 1;
+        padding: 15px;
+        overflow-y: auto;
+    }
+
+    .task {
+        background: #e3f2fd;
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .task.completed {
+        text-decoration: line-through;
+        background: #c8e6c9;
+    }
+
+    .actions button {
+        margin-left: 5px;
+        border: none;
+        padding: 5px 8px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .complete-btn {
+        background: #4caf50;
+        color: white;
+    }
+
+    .delete-btn {
+        background: #f44336;
+        color: white;
+    }
+
+    .input-area {
+        display: flex;
+        padding: 10px;
+        border-top: 1px solid #ddd;
+    }
+
+    .input-area input {
+        flex: 1;
+        padding: 8px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+    }
+
+    .input-area button {
+        margin-left: 5px;
+        padding: 8px 12px;
+        border: none;
+        background: #4a90e2;
+        color: white;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+</style>
+</head>
+
+<body>
+
+<div class="app">
+    <div class="header">Chat To-Do App</div>
+
+    <div class="messages" id="taskList"></div>
+
+    <div class="input-area">
+        <input type="text" id="taskInput" placeholder="Type a task...">
+        <button onclick="addTask()">Send</button>
+    </div>
+</div>
+
+<script>
+    let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+
+    function saveTasks() {
+        localStorage.setItem("tasks", JSON.stringify(tasks));
+    }
+
+    function renderTasks() {
+        const taskList = document.getElementById("taskList");
+        taskList.innerHTML = "";
+
+        tasks.forEach((task, index) => {
+            const taskDiv = document.createElement("div");
+            taskDiv.className = "task" + (task.completed ? " completed" : "");
+
+            taskDiv.innerHTML = `
+                <span>${task.text}</span>
+                <div class="actions">
+                    <button class="complete-btn" onclick="toggleComplete(${index})">✓</button>
+                    <button class="delete-btn" onclick="deleteTask(${index})">✕</button>
+                </div>
+            `;
+
+            taskList.appendChild(taskDiv);
+        });
+    }
+
+    function addTask() {
+        const input = document.getElementById("taskInput");
+        const text = input.value.trim();
+
+        if (text === "") return;
+
+        tasks.push({ text: text, completed: false });
+        input.value = "";
+        saveTasks();
+        renderTasks();
+    }
+
+    function toggleComplete(index) {
+        tasks[index].completed = !tasks[index].completed;
+        saveTasks();
+        renderTasks();
+    }
+
+    function deleteTask(index) {
+        tasks.splice(index, 1);
+        saveTasks();
+        renderTasks();
+    }
+
+    renderTasks();
+</script>
+
+</body>
+</html>
